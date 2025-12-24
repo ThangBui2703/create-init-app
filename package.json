@@ -1,5 +1,5 @@
 {
-  "name": "create-init-app",
+  "name": "create-init-mtv-app",
   "version": "1.0.0",
   "description": "CLI for create init app",
   "keywords": [
@@ -18,12 +18,16 @@
   "type": "module",
   "main": "dist/index.mjs",
   "bin": {
-    "create-init-app": "./dist/index.mjs"
+    "create-init-app": "dist/index.mjs"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsdown",
-    "start": "node dist/index.mjs"
+    "start": "node dist/index.mjs",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@types/fs-extra": "^11.0.4",
@@ -38,8 +42,5 @@
     "@types/node": "^25.0.3",
     "tsdown": "^0.18.2",
     "typescript": "^5.9.3"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

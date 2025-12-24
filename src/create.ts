@@ -10,7 +10,7 @@ import {
     Dependencies,
 } from "./installers";
 import { DevDependencies } from "./installers/devDependencies";
-import { setupBiome, setupHuskyLintStaged, setupNextEnv, setupNextSupabaseClient, setupNextSupabaseLocal, setupShadcn, setupJest } from "./setups";
+import { setupBiome, setupHuskyLintStaged, setupNextEnv, setupNextSupabaseClient, setupNextSupabaseLocal, setupShadcn, setupJest, setupDrizzle } from "./setups";
 
 export async function createProject(answers: Answers) {
     const {
@@ -56,6 +56,9 @@ export async function createProject(answers: Answers) {
             }
             if (dbTool === DB_TOOLS.SUPABASE_JS_SDK) {
                 await setupNextSupabaseLocal(projectName);
+            }
+            if (dbTool === DB_TOOLS.DRIZZLE_ORM) {
+                await setupDrizzle(projectName);
             }
 
             if (uiLibrary === UI_LIB.SHADCN) {

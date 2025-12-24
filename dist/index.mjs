@@ -252,6 +252,41 @@ export const sharedEnv = parsed.data;
 `.trimStart();
 
 //#endregion
+//#region src/setups/drizzle.ts
+async function setupDrizzle(projectName) {
+	const schemasDir = path.join(projectName, "src", "backend", "db", "schemas");
+	const migrationsDir = path.join(projectName, "src", "backend", "db", "migrations");
+	const drizzleConfigPath = path.join(projectName, "src", "backend", "db", "drizzle.config.ts");
+	await Promise.all([
+		fs.ensureDir(schemasDir),
+		fs.ensureDir(migrationsDir),
+		fs.ensureFile(drizzleConfigPath)
+	]);
+	await fs.writeFile(drizzleConfigPath, drizzleConfigTemplate);
+	const packageJsonPath = path.join(projectName, "package.json");
+	const packageJson = await fs.readJson(packageJsonPath);
+	packageJson.scripts["db:generate"] = "npx drizzle-kit generate --config=./src/backend/db/drizzle.config.ts";
+	packageJson.scripts["db:migrate"] = "npx drizzle-kit push --config=./src/backend/db/drizzle.config.ts";
+	packageJson.scripts["db:studio"] = "npx drizzle-kit studio --verbose --config=./src/backend/db/drizzle.config.ts";
+	packageJson.scripts["db:pull"] = "npx drizzle-kit pull --config=./src/backend/db/drizzle.config.ts";
+	packageJson.scripts["db:check"] = "npx drizzle-kit check --config=./src/backend/db/drizzle.config.ts";
+	await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+}
+const drizzleConfigTemplate = `import "server-only";
+import { defineConfig } from "drizzle-kit";
+import { serverEnv } from "../env.server";
+
+export default defineConfig({
+  dialect: "postgresql",
+  schema: "./src/backend/db/schemas/*",
+  out: "./src/backend/db/migrations",
+  dbCredentials: {
+    url: serverEnv.DATABASE_URL,
+  },
+});
+`.trimStart();
+
+//#endregion
 //#region src/setups/shadcn.ts
 async function setupShadcn(projectName) {
 	await execa("npx", [
@@ -310,6 +345,44 @@ async function setupNextSupabaseLocal(projectDir) {
 }
 
 //#endregion
+//#region src/setups/jest.ts
+async function setupJest(projectName) {
+	const jestConfigPath = path.join(projectName, "jest.config.ts");
+	await fs.ensureFile(jestConfigPath);
+	await fs.writeFile(jestConfigPath, jestConfigTemplate);
+	const packageJsonPath = path.join(projectName, "package.json");
+	const packageJson = await fs.readJson(packageJsonPath);
+	packageJson.scripts["test:unit"] = "jest --testPathPatterns=unit";
+	packageJson.scripts["test:integration"] = "jest --testPathPatterns=integration";
+	await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+	const testUnitDir = path.join(projectName, "src", "backend", "test", "unit");
+	const testIntegrationDir = path.join(projectName, "src", "backend", "test", "integration");
+	await Promise.all([fs.ensureDir(testUnitDir), fs.ensureDir(testIntegrationDir)]);
+}
+const jestConfigTemplate = `import type { Config } from "jest";
+
+const config: Config = {
+  clearMocks: true,
+  coverageProvider: "v8",
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
+  preset: "ts-jest",
+  testEnvironment: "node",
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.json",
+      },
+    ],
+  },
+};
+
+export default config;
+`.trimStart();
+
+//#endregion
 //#region src/create.ts
 async function createProject(answers) {
 	const { projectName, framework, dbProvider, dbTool, uiLibrary, useMonorepo } = answers;
@@ -341,8 +414,10 @@ async function createProject(answers) {
 			await setupNextEnv(projectName, isSupabase);
 			if (isSupabase) await setupNextSupabaseClient(projectName);
 			if (dbTool === DB_TOOLS.SUPABASE_JS_SDK) await setupNextSupabaseLocal(projectName);
+			if (dbTool === DB_TOOLS.DRIZZLE_ORM) await setupDrizzle(projectName);
 			if (uiLibrary === UI_LIB.SHADCN) await setupShadcn(projectName);
 			await setupBiome(projectName, uiLibrary === UI_LIB.SHADCN);
+			await setupJest(projectName);
 			break;
 		}
 		case FRAMEWORKS.NEXT_EXPRESS:
