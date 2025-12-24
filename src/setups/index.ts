@@ -6,3 +6,4 @@ export { setupShadcn } from "./shadcn";
 export { setupBiome } from "./biome";
 export { setupNextSupabaseLocal } from "./next_supabase_local";
 export { setupJest } from "./jest";
+export { setupDockerPostgres } from "./docker_postges";

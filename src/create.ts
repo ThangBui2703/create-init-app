@@ -10,7 +10,7 @@ import {
     Dependencies,
 } from "./installers";
 import { DevDependencies } from "./installers/devDependencies";
-import { setupBiome, setupHuskyLintStaged, setupNextEnv, setupNextSupabaseClient, setupNextSupabaseLocal, setupShadcn, setupJest, setupDrizzle } from "./setups";
+import { setupBiome, setupHuskyLintStaged, setupNextEnv, setupNextSupabaseClient, setupNextSupabaseLocal, setupShadcn, setupJest, setupDrizzle, setupDockerPostgres } from "./setups";
 
 export async function createProject(answers: Answers) {
     const {
@@ -25,7 +25,6 @@ export async function createProject(answers: Answers) {
     switch (framework) {
         case FRAMEWORKS.NEXT: {
             await createNextApp(projectName);
-            const isSupabase = dbProvider === DB_PROVIDERS.SUPABASE;
             const dependencies: Dependencies[] = [
                 "react-hook-form",
                 "@hookform/resolvers",
@@ -39,7 +38,7 @@ export async function createProject(answers: Answers) {
                 "@types/jest",
                 "ts-jest",
             ]
-            if (isSupabase) {
+            if (dbProvider === DB_PROVIDERS.SUPABASE) {
                 dependencies.push("@supabase/ssr", "@supabase/supabase-js");
             }
             if (dbTool === DB_TOOLS.DRIZZLE_ORM) {
@@ -50,9 +49,12 @@ export async function createProject(answers: Answers) {
             await installDevDependencies(projectName, devDependencies);
 
             await setupHuskyLintStaged(projectName);
-            await setupNextEnv(projectName, isSupabase);
-            if (isSupabase) {
+            await setupNextEnv(projectName, dbProvider === DB_PROVIDERS.SUPABASE);
+            if (dbProvider === DB_PROVIDERS.SUPABASE) {
                 await setupNextSupabaseClient(projectName);
+            }
+            if (dbProvider === DB_PROVIDERS.DOCKER) {
+                await setupDockerPostgres(projectName);
             }
             if (dbTool === DB_TOOLS.SUPABASE_JS_SDK) {
                 await setupNextSupabaseLocal(projectName);

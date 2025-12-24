@@ -383,13 +383,36 @@ export default config;
 `.trimStart();
 
 //#endregion
+//#region src/setups/docker_postges.ts
+async function setupDockerPostgres(projectName) {
+	const dockerComposePath = path.join(projectName, "docker-compose.yml");
+	await fs.ensureFile(dockerComposePath);
+	await fs.writeFile(dockerComposePath, dockerComposeTemplate);
+}
+const dockerComposeTemplate = `
+version: '3'
+services:
+  postgres:
+    image: postgres:17
+    ports:
+    - 5432:5432
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=postgres
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
+`;
+
+//#endregion
 //#region src/create.ts
 async function createProject(answers) {
 	const { projectName, framework, dbProvider, dbTool, uiLibrary, useMonorepo } = answers;
 	switch (framework) {
 		case FRAMEWORKS.NEXT: {
 			await createNextApp(projectName);
-			const isSupabase = dbProvider === DB_PROVIDERS.SUPABASE;
 			const dependencies = [
 				"react-hook-form",
 				"@hookform/resolvers",
@@ -403,7 +426,7 @@ async function createProject(answers) {
 				"@types/jest",
 				"ts-jest"
 			];
-			if (isSupabase) dependencies.push("@supabase/ssr", "@supabase/supabase-js");
+			if (dbProvider === DB_PROVIDERS.SUPABASE) dependencies.push("@supabase/ssr", "@supabase/supabase-js");
 			if (dbTool === DB_TOOLS.DRIZZLE_ORM) {
 				dependencies.push("drizzle-orm", "postgres");
 				devDependencies.push("drizzle-kit");
@@ -411,8 +434,9 @@ async function createProject(answers) {
 			await installDependencies(projectName, dependencies);
 			await installDevDependencies(projectName, devDependencies);
 			await setupHuskyLintStaged(projectName);
-			await setupNextEnv(projectName, isSupabase);
-			if (isSupabase) await setupNextSupabaseClient(projectName);
+			await setupNextEnv(projectName, dbProvider === DB_PROVIDERS.SUPABASE);
+			if (dbProvider === DB_PROVIDERS.SUPABASE) await setupNextSupabaseClient(projectName);
+			if (dbProvider === DB_PROVIDERS.DOCKER) await setupDockerPostgres(projectName);
 			if (dbTool === DB_TOOLS.SUPABASE_JS_SDK) await setupNextSupabaseLocal(projectName);
 			if (dbTool === DB_TOOLS.DRIZZLE_ORM) await setupDrizzle(projectName);
 			if (uiLibrary === UI_LIB.SHADCN) await setupShadcn(projectName);
