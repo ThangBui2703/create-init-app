@@ -23,6 +23,9 @@ export async function setupHuskyLintStaged(projectName: string) {
             "npm run lint",
         ],
     };
+    packageJson.scripts["prepare"] = "husky";
+    packageJson.scripts["lint"] = "biome check";
+    packageJson.scripts["format"] = "biome format --write";
     await fs.writeJson(packageJsonPath, packageJson, {
         spaces: 2,
     });

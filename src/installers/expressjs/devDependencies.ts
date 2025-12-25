@@ -4,17 +4,20 @@ export type DevDependencies =
     | "husky"
     | "lint-staged"
     | "jest"
-    | "@types/jest"
     | "ts-jest"
     | "typescript"
     | "ts-node"
-    | "morgan"
     | "@types/express"
     | "@types/cors"
     | "@types/helmet"
     | "@types/dotenv"
     | "@types/morgan"
     | "nodemon"
+    | "@biomejs/biome"
+    | "@types/cookie-parser"
+    | "@types/jest"
+    | "@types/swagger-ui-express"
+    | "drizzle-kit"
 
 export async function installDevDependencies(projectName: string, devDependencies: DevDependencies[]) {
     await execa(

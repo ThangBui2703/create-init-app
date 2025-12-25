@@ -4,6 +4,8 @@ export async function setupShadcn(projectName: string) {
     const args = [
         "shadcn@latest",
         "init",
+        "-b",
+        "neutral",
         "dialog",
         "avatar",
         "button-group",
