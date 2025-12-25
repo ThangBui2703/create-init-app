@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs-extra";
 
-export async function setupNextSupabaseClient(projectDir: string) {
+export async function setupSupabaseClient(projectDir: string) {
   const supabaseDir = path.join(projectDir, "src", "lib", "supabase");
   await fs.ensureDir(supabaseDir);
 

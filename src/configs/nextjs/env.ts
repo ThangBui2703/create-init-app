@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs-extra"
 
-export async function setupNextEnv(projectName: string, isSupabase: boolean = false) {
+export async function setupEnv(projectName: string, isSupabase: boolean = false) {
   const sharedEnvPath = path.join(projectName, "env.shared.ts");
   const backendDir = path.join(projectName, "src", "backend");
   const serverEnvPath = path.join(backendDir, "env.server.ts");

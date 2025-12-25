@@ -1,0 +1,9 @@
+export { setupHuskyLintStaged } from "./husky_lint-staged";
+export { setupSupabaseClient } from "./nextjs/supabase_client";
+export { setupEnv } from "./nextjs/env";
+export { setupDrizzle } from "./nextjs/drizzle";
+export { setupShadcn } from "./nextjs/shadcn";
+export { setupBiome } from "./nextjs/biome";
+export { setupSupabaseLocal } from "./nextjs/supabase_local";
+export { setupJest } from "./nextjs/jest";
+export { setupDockerPostgres } from "./docker_postgres";

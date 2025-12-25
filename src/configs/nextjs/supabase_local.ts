@@ -2,7 +2,7 @@ import { execa } from "execa";
 import path from "path";
 import fs from "fs-extra";
 
-export async function setupNextSupabaseLocal(projectDir: string) {
+export async function setupSupabaseLocal(projectDir: string) {
     execa("npx", ["supabase", "init"], {
         cwd: projectDir,
         stdio: "inherit"

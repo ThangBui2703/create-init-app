@@ -8,11 +8,11 @@ const DB_TOOLS_MAP: Record<string, string[]> = {
 
 export type Answers = {
     projectName: string;
-    framework: string;
-    dbProvider: string;
-    dbTool: string;
-    uiLibrary: string;
-    useMonorepo: boolean;
+    framework: FRAMEWORKS;
+    dbProvider: DB_PROVIDERS;
+    dbTool: DB_TOOLS;
+    uiLibrary: UI_LIB;
+    isNeverThrow: boolean;
 };
 export async function ask(): Promise<Answers> {
     const answers = await inquirer.prompt([
@@ -69,11 +69,10 @@ export async function ask(): Promise<Answers> {
         },
         {
             type: "confirm",
-            name: "useMonorepo",
-            message: "Do you want to use monorepo?",
-            default: true,
-            when: (answers) => ![FRAMEWORKS.NEXT, FRAMEWORKS.REACT].includes(answers.framework)
-        },
+            name: "isNeverThrow",
+            message: "Do you want to use nerverthrow?",
+            default: false,
+        }
     ]);
     return answers;
 }
