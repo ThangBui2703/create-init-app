@@ -1,9 +1,7 @@
 import { Answers } from "./ask";
 import { DB_PROVIDERS, DB_TOOLS, FRAMEWORKS } from "./enum";
-import { createExpressApp } from "./installers/expressjs";
-import { createNestApp } from "./installers/nestjs";
-import { createReactApp } from "./installers/react";
 import { setupExpressjs } from "./setup/expressjs";
+import { setupNestjs } from "./setup/nestjs";
 import { setupNextjs } from "./setup/nextjs";
 
 export async function createProject(answers: Answers) {
@@ -32,20 +30,22 @@ export async function createProject(answers: Answers) {
         }
 
         case FRAMEWORKS.NEXT_NEST: {
-            await setupNextjs(projectName + "-fe", DB_PROVIDERS.NONE, DB_TOOLS.NONE, uiLibrary, isNeverThrow);
-            createNestApp(projectName + "-be");
+            await Promise.all([
+                setupNextjs(projectName + "-fe", DB_PROVIDERS.NONE, DB_TOOLS.NONE, uiLibrary, isNeverThrow),
+                setupNestjs(projectName + "-be", dbProvider,dbTool, isNeverThrow),
+            ])
             break;
         }
 
         case FRAMEWORKS.REACT_EXPRESS: {
-            createReactApp(projectName + "-fe");
-            createExpressApp(projectName + "-be");
+        //    createReactApp(projectName + "-fe");
+        //    await createExpressApp(projectName + "-be");
             break;
         }
 
         case FRAMEWORKS.REACT_NEST: {
-            createReactApp(projectName + "-fe");
-            createNestApp(projectName + "-be");
+                // createReactApp(projectName + "-fe");
+                // createNestApp(projectName + "-be");
             break;
         }
     }
