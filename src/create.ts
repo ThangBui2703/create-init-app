@@ -3,6 +3,7 @@ import { DB_PROVIDERS, DB_TOOLS, FRAMEWORKS } from "./enum";
 import { setupExpressjs } from "./setup/expressjs";
 import { setupNestjs } from "./setup/nestjs";
 import { setupNextjs } from "./setup/nextjs";
+import { setupReactTSRouter } from "./setup/reactTSRouter";
 
 export async function createProject(answers: Answers) {
     const {
@@ -38,14 +39,18 @@ export async function createProject(answers: Answers) {
         }
 
         case FRAMEWORKS.REACT_EXPRESS: {
-        //    createReactApp(projectName + "-fe");
-        //    await createExpressApp(projectName + "-be");
+            await Promise.all([
+                setupReactTSRouter(projectName + "-fe"),
+                setupExpressjs(projectName + "-be", dbProvider, dbTool, isNeverThrow),
+            ])
             break;
         }
 
         case FRAMEWORKS.REACT_NEST: {
-                // createReactApp(projectName + "-fe");
-                // createNestApp(projectName + "-be");
+            await Promise.all([
+                setupReactTSRouter(projectName + "-fe"),
+                setupNestjs(projectName + "-be", dbProvider, dbTool, isNeverThrow),
+            ])
             break;
         }
     }

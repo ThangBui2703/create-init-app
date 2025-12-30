@@ -45,8 +45,8 @@ export async function ask(): Promise<Answers> {
                 { name: "Next.js", value: FRAMEWORKS.NEXT },
                 { name: "Next.js + Express", value: FRAMEWORKS.NEXT_EXPRESS },
                 { name: "Next.js + NestJS", value: FRAMEWORKS.NEXT_NEST },
-                { name: "React.js + Express", value: FRAMEWORKS.REACT_EXPRESS },
-                { name: "React.js + NestJS", value: FRAMEWORKS.REACT_NEST },
+                { name: "React.js (tanstack router) + Express", value: FRAMEWORKS.REACT_EXPRESS },
+                { name: "React.js (tanstack router) + NestJS", value: FRAMEWORKS.REACT_NEST },
             ],
         },
         {

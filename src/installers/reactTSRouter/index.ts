@@ -1,0 +1,1 @@
+export { createReactTSRouterApp } from "./reactTSRouter";
